@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Raqamni Top</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: rgb(28, 28, 109);
+      }
+      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+      .container__itim {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background-color: rgb(18, 18, 171);
+        width: 500px;
+        padding: 10px;
+        border-radius: 10px;
+        gap: 10px;
+        border: 1px solid white;
+        box-shadow: 0px 0px 6px white;
+        flex-direction: column;
+      }
+      h2 {
+        font-size: 16px;
+        text-align: center;
+        font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+        letter-spacing: 1px;
+        color: #fff;
+      }
+      hr {
+        width: 95%;
+        margin-bottom: 10px;
+      }
+      .v {
+        display: flex;
+        background-color: #a59c9c;
+        padding: 12px;
+        border-radius: 10px;
+        color: #13185a;
+        font-size: 18px;
+        letter-spacing: 1px;
+        font-weight: 600;
+        gap: 2px;
+        font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+        align-items: center;
+      }
+      button {
+        background-color: blue;
+        border: none;
+        border: 2px solid white;
+        padding: 10px 20px;
+        width: 150px;
+        color: white;
+        font-weight: 700;
+        border-radius: 10px;
+        outline: none;
+        cursor: pointer;
+      }
+      span {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgb(78, 78, 172);
+        border-radius: 12px;
+        color: #fff;
+        font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+        font-weight: 600;
+      }
+      input {
+        outline: none;
+        padding-left: 12px;
+        padding-right: 10px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border-radius: 8px;
+        background-color: rgb(102, 102, 232);
+        border: 2px solid #a59c9c;
+        font-size: 17px;
+        color: white;
+      }
+      .j {
+        background-color: #fff;
+        gap: 5px;
+      }
+      .rekord {
+        position: absolute;
+        right: 20px;
+        top: 75px;
+        color: white;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+          sans-serif;
+        font-size: 18px;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="container__itim">
+        <h2>
+          Sizga 15 sekund vaqt beriladi siz bu vaqat ichida nechta raqam aniqlay
+          olasiz
+        </h2>
+        <hr />
+        <div class="v">Sizda <span id="vaqat">15</span> sekund vaqat bor</div>
+        <div class="rekord">Record : <span id="rekord">0</span></div>
+        <button onclick="korish()">Kodni olish</button>
+        <span id="raqam">1</span>
+        <input type="text" name="input" id="input" />
+        <button onclick="tekshrish()">kodni tekshir</button>
+        <div id="togri"></div>
+      </div>
+    </div>
+  </body>
+  <script>
+    let rekord = localStorage.getItem("rekord") || 0;
+    rekord = parseInt(rekord);
+    document.getElementById("rekord").textContent = rekord;
+
+    let random;
+    let vaqt = 10;
+    let vaqtInterval;
+    let togriSon = 0;
+    let xatoSon = 0;
+
+    function korish() {
+      // Vaqtni boshlash (faqat birinchi bosilganda)
+
+      clearInterval(vaqtInterval);
+      vaqt = 15;
+      document.getElementById("vaqat").textContent = vaqt;
+
+      togriSon = 0;
+      xatoSon = 0;
+
+      document.getElementById("hisob")?.remove(); // eski natija o‘chirish
+      document.getElementById("togri").textContent = ""; // togri javobni ham o‘chirish
+
+      chiqarishRaqam();
+
+      vaqtInterval = setInterval(() => {
+        vaqt--;
+        document.getElementById("vaqat").textContent = vaqt;
+        const rekordt = document.getElementById("rekord");
+        if (vaqt <= 0) {
+          clearInterval(vaqtInterval);
+          if (togriSon > rekord) {
+            rekord = togriSon;
+            localStorage.setItem("rekord", rekord);
+            rekordt.textContent = rekord; // yangilangan qiymatni endi yozamiz
+          }
+
+          const natija = document.createElement("div");
+          natija.id = "hisob";
+          natija.innerHTML = `
+     <p style="
+  color: white; 
+  background-color: #2e7d32; 
+  padding: 10px 15px; 
+  border-radius: 8px; 
+  font-size: 16px; 
+  margin-bottom: 8px;
+">
+✅ To'g'ri javob: ${togriSon} ta
+</p>
+
+<p style="
+  color: white; 
+  background-color: #c62828; 
+  padding: 10px 15px; 
+  border-radius: 8px; 
+  font-size: 16px;
+">
+❌ Xato javob: ${xatoSon} ta
+</p>
+<p style="
+  color: yellow; 
+  background-color: #333; 
+  padding: 10px 15px; 
+  border-radius: 8px; 
+  font-size: 16px; 
+  margin-bottom: 10px;
+  margin-top: 8px;
+">
+
+🏆 Rekord: ${rekord} ta
+</p>
+
+
+<button onclick="korish()" style="
+  background-color: #1976d2; 
+  color: white; 
+  border: none; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  transition: background-color 0.3s;
+  display: block; 
+  margin: 10px auto;
+">
+Qayta boshlash
+</button>
+
+      `;
+
+          document.querySelector(".container__itim").appendChild(natija);
+        }
+      }, 1000);
+      document.getElementById("input").focus();
+    }
+
+    function chiqarishRaqam() {
+      random = Math.floor(Math.random() * 10);
+      document.getElementById("raqam").textContent = random;
+    }
+
+    function tekshrish() {
+      if (vaqt <= 0) return; // vaqt tugagan bo‘lsa javob qabul qilmaydi
+
+      let input = document.getElementById("input").value;
+      const togri = document.getElementById("togri");
+      if (input === "") {
+        togri.textContent = "Iltimos maydonni to‘ldiring !";
+        togri.style.color = "red";
+        togri.style.fontFamily =
+          "Franklin Gothic Medium, Arial Narrow, Arial, sans-serif";
+
+        return;
+      }
+
+      if (parseInt(input) === random) {
+        togri.textContent = `✅ To'g'ri!`;
+        togri.style.color = "white";
+        togriSon++;
+      } else {
+        togri.textContent = `❌ Xato! To'g'ri: ${random}`;
+        togri.style.color = "red";
+
+        xatoSon++;
+      }
+
+      document.getElementById("input").value = "";
+      chiqarishRaqam(); // faqat yangi raqam chiqariladi, vaqt o‘zgarmaydi!
+    }
+
+    document
+      .getElementById("input")
+      .addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+          tekshrish();
+        }
+      });
+  </script>
+</html>
